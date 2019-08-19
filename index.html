@@ -1,57 +1,52 @@
 <!--Client-->
 
 <!doctype html>
-<html>
-  <head>
-    <!--Bootstrap CDN-->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <!--JQuery-->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <!--Socket.io dependencies-->
-    <script src="/socket.io/socket.io.js"></script>
-  
-    <title>Iron Chat</title>
-  </head>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <!--Bootstrap CDN-->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <!--JQuery-->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <!--Socket.io dependencies-->
+        <script src="/socket.io/socket.io.js"></script>
+        <!--Custom CSS-->
+        <link rel="stylesheet" href="static/css/style.css">
+    
+        <title>Iron Chat</title>
+    </head>
 
-  <body>
-    <div class="container">
-      <form id="message-form">
-        <div class="form-group">
-          <label>Enter Message</label>
-          <textarea class="form-control" id="message"></textarea>
-          <br>
-          <button type="button" id="send-form" class="btn btn-primary">Send</button>
-        </div>
-      </form>
-    </div>
+    <body>
+        <ul id="messages"></ul>
+        <form action="">
+            <input id="m" autocomplete="off" /><button>Send</button>
+        </form>
 
-
-    <!--Socket.io Scripts-->
+    <!--Socket.io Jquery Scripts-->
     <script>
-        function main() {
-          let socket = io.connect();//io.connect() connects the function
-          let sendForm = document.getElementById('send-form');
-          let message = document.getElementById('message');
-          
-          sendForm.addEventListener('click', submit);
-          
+        $(function () {
+            let socket = io();
+            $('form').submit(function(e){
+                e.preventDefault(); // prevents page reloading
+                socket.emit('chat message', $('#m').val());
+                $('#m').val('');
+                return false;
+            });
 
-          //When send is clicked, client will 'emit'/send 'send message' event which will be caught by the server. 
-          function submit(e) { // e is event parameter
-            e.preventDefault();
-            console.log('Submitted');//Test
-            socket.emit('send message', message.value);//Sends 'send message' event and the text inside the form. 
-            message.value = '';//clears the text in the form for next input. 
-          }
+            //Sending custom events to all users
 
-        }
-
-        //Run the main function to connect
-        main()
+            socket.on('chat message', function(msg){
+                $('#messages').append($('<li>').text(msg));
+            });
+        });
     </script>
 
-    <!--Bootstrap-->
+    <!--Bootstrap JS-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-  </body>
+    </body>
 </html>

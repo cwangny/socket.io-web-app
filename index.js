@@ -1,51 +1,36 @@
-//Server
- 
-//Importing new modules in old js. ES6 hasn't not been implemented yet in node
-//Importing modules and libraries
-const express = require('express');
-const app = express();
-const port = 3000;
-//Importing http library
-const http = require('http').createServer(app);
+//Server side
 
-//Importing socket.io library
-const io = require('socket.io')(http);
+let express = require('express');
+let app = express();
+let http = require('http').createServer(app);
+let PORT = 3000;
+let io = require('socket.io')(http);
 
-users = [];
-connections = [];
-
-//Initilize and create a route
-app.get('/', function (req, res) {
+//Initalize and create a route
+app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
-//VERY IMP: Example of events are connection, disconnect. They are native events. You can use .emit to create custom events. If you misspell it will not work.
-//Open a connection with Socket.io
-io.on('connection', function(socket) {
-    //Connect
-    //When a 'connection' event is detected, connections array is incremented by 1.
-    connections.push(socket);
-    console.log(`Connected: ${connections.length} sockets connected`);
+//Load static files: CSS
+app.use('/static', express.static('static'));
+
+//When client goes on port 3000 on the web browser, the client activates the 'connection' event and this event caught by the server and prints the message.
+//Similar to .addEventListener('eventname', function)  
+io.on('connection', function(socket){
+    console.log('a user connected');
 
     //Disconnect
-    //When a 'disconnect' event is detected, connections array is incremented by -1.
-    socket.on('disconnect', function(data) {
-      connections.splice(connections.indexOf(socket), 1);
-      console.log(`Disconnected: ${connections.length} sockets still connected`);
-    })
-    
-    //Send Messages
-    //When the send button is clicked, the client side will send 'send message' event, this function will catch that and return a new event 'new message'
-    socket.on('send message', function(data){
-      console.log(data)
-      io.emit('new message', {msg: data});
+    socket.on('disconnect', function(){
+        console.log('user disconnected');
+    });
+
+    //Prints chat message to the console
+    socket.on('chat message', function(msg){
+        console.log('message: ' + msg);
+        io.emit('chat message', msg);
     });
 });
 
-//Run the server
-http.listen(port);
-console.log(`Server started in port: ${port}`);
-
-
-
-
+http.listen(PORT, function(){
+  console.log(`Server Started on PORT: ${PORT}`);
+});
