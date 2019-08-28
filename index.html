@@ -1,4 +1,4 @@
-<!--Client-->
+<!--Client Side-->
 
 <!doctype html>
 <html lang="en">
@@ -25,44 +25,69 @@
     </head>
 
     <body>
-    <nav>
-        <div class="nav-wrapper">
-            <a href="#" class="brand-logo">Iron Chat</a>
-            <ul id="nav-mobile" class="right hide-on-med-and-down">
-            <li><a href="sass.html">Sass</a></li>
-            <li><a href="badges.html">Components</a></li>
-            <li><a href="collapsible.html">JavaScript</a></li>
-            </ul>
-        </div>
-    </nav>
 
-    
+    <!--Set Username Page -->
+    <div id="set-username-wrap">
+        <p>Write your username: </p>
+        <p id="nick-err-msg"></p>
+        <form id="set-nick" autocomplete="off">
+            <input id="username" type="text">
+            <input type="submit">
 
-    <div class="container">
+        </form>
+    </div>
+
+
+    <!--Main Content-->
+    <div id="main-content-wrap">
         <div class="row">
-            <div class="col s12">
-                <div id="card" class="card-panel teal">
-                    <span class="white-text">MESSAGES</span>
-                    <ul id="messages"></ul>
-                </div>
-            </div>
-        </div>
+            <!--Left Side-->
+            <div class="col s2" id="side-menu">
+                <!-- Side Menu -->
+                <div class="card-panel hoverable">Chat Name</div>
 
-        <div id="message-box" class="row">
-            <div class="col s11">
-                <form>
-                    <input id="m">
-                </form>
+                <ul class="collection">
+                    <li class="collection-item grey lighten-5">general</li>
+                    <li class="collection-item grey lighten-5">software</li>
+                    <li class="collection-item grey lighten-5">html</li>
+                    <li class="collection-item grey lighten-5">js</li>
+                </ul>
             </div>
-            <div class="col s1">
-                <button class="btn waves-effect waves-light" name="action">Send</button>
+            
+            <!--Right Side-->
+            <div class="col s10" id="page-content">
+                <section>
+                    <div id="card" class="card-panel teal">
+                        <span class="white-text">MESSAGES</span>
+                        <ul id="messages"></ul>
+                    </div>
+                </section>
+                        
+                <section>
+                    <div id="message-box" class="row">
+                        <form id="msg-form" autocomplete="off">
+                            <div class="col s10">
+                                <input id="m" type="text">
+                            </div>
+                            
+                            <div class="col s2">
+                                <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+                                    <i class="material-icons right">send</i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+                
             </div>
         </div>
-                          
-        
-        
+    </div>
+
+    <div>
+        <button id="show-list" type="button" class="btn waves-effect waves-light">Show Users<i class="material-icons right">send</i></button>
+        <div id="user-list">
             
-    <!--END CONTAINER-->
+        </div>
     </div>
 
     
@@ -72,27 +97,61 @@
     <script>
         $(function () {
             let socket = io();
-            $('form').submit(function(e){
+
+            //Setting username Function:
+            //jquery selects set-nick form and whenever the submit event is triggered, this function is exectued.
+            //This function emits a custom event called username, at the same time it also sends in the value that is stored in the input field with id #username. 
+            //This event is then caught by the server.
+            //.submit method is equavelent to .on('submit')
+            $('#set-nick').submit(function(e){
+                e.preventDefault(); //Prevents page reloading
+                console.log('Username Submitted');
+                //Emit the username event and send the value
+                name = $('#username').val();
+                socket.emit('username', $('#username').val())
+
+                $('#username').val('');
+                $('#set-username-wrap').hide();
+                $('#main-content-wrap').show();
+                $('#show-list').show();
+                $('#user-list').show();
+
+                console.log(name + ' connected')
+            })
+
+            //Userlist Function:
+            //Log the userNamesArray
+            socket.on('username', function(data){
+                console.log(data);
+                $('#show-list').on('click', function(){
+                    $('#user-list').html('');
+                    $('#user-list').append(`${data}`);
+                })
+            })
+
+        
+            //Main chat function:
+            $('#msg-form').submit(function(e){
                 e.preventDefault(); // prevents page reloading
                 socket.emit('chat message', $('#m').val());
                 $('#m').val('');
                 return false;
             });
 
-            //Sending custom events to all users
-            socket.on('chat message', function(msg){
-                $('#messages').append($('<li>').text(msg));
+            //Appends the message to the chat box. 
+            socket.on('chat message', function(data){
+                $('#messages').append(data.nick +': '+ data.msg + '<br>');
             });
 
-            //When new user joins 'a user connected' msg is displayed 
+            //When new user joins 'a user connected' msg is displayed on the browser console 
             socket.on('connect', function(){
-                console.log('a user connected')
-                $('#messages').append('<li>A User Connected</li>');
+                console.log('a userconnected');
+                $('#messages').append(`<li>A User Connected</li>`);
             })
 
-            //When user disconnects 'a user disconnected' msg is shown
+            //When user disconnects 'a user disconnected' msg is shown on the browser  console
             socket.on('disconnect', function(){
-                console.log('a user disconnected')
+                console.log('a user disconnected');
                 $('#messages').append('<li>A User Disconnected</li>');
             })
 

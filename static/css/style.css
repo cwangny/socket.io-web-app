@@ -1,10 +1,45 @@
+* {
+
+}
+
+#main-content-wrap {
+    display: none;
+}
+
+#side-menu {
+    /*padding-left: 0!important;
+    padding-right: 0!important; 
+    */
+    height: 1080px;
+    background-color: #fafafa;
+}
+
+#user-list {
+    display: none;
+}
+
+#show-list {
+    display: none;
+}
+
+#page-content {
+    border-left-style: solid;
+    border-left-width: 1px;
+    border-left-color: #e0e0e0;
+    height: 1080px; 
+    
+}
+
+.collection {
+    border-left: none;
+    border-right: none;
+}
 #message-box {
-    position: relative;
-    margin-top: 0;
+    
 }
 
 #card {
-    height: 750px;
+    height: 500px;
     overflow: scroll; 
     
 }
