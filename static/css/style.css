@@ -18,6 +18,10 @@
     display: none;
 }
 
+#remove-user {
+    display: none;
+}
+
 #show-list {
     display: none;
 }

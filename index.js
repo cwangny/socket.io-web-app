@@ -5,7 +5,7 @@ let app = express();
 let http = require('http').createServer(app);
 let PORT = 3000;
 let io = require('socket.io')(http);
-
+//Global Scope
 let userNamesArray = [];
 let nickname;
 
@@ -22,29 +22,51 @@ app.use('/static', express.static('static'));
 //When client goes on port 3000 on the web browser, the client activates the 'connection' event and this event caught by the server and initiates the app.
 //Similar to .addEventListener('eventname', function)  
 io.on('connect', function(socket){
-    console.log('a user connected');
+    console.log('a user connected, username not set');
     socket.emit('connect');
 
     //The sever side catches the event named username and the data which is the value inside the input tag id #username.
+
+    //Add username to userarray function:
     socket.on('username', function(userName){
       console.log('New User: ' + userName);
       socket.nickname = userName;
       
       userNamesArray.push(userName);
       console.log(userNamesArray);
-      io.emit('username', userNamesArray);
-      //io.emit('name', data);
       
+    })
+
+    //Send Userlist 
+    socket.on('userlist', function(data) {
+      console.log('Emitting: '+userNamesArray);
+      io.emit('updateduserlist', userNamesArray);
+    })
+
+    //Removes User from the userlist and returns a new list
+    let updatedUserList=[];
+    socket.on('remove user', function(data){
+      console.log('Before Userlist: '+userNamesArray);
+      for (let i = 0; i < userNamesArray.length; i++) {
+        if (socket.nickname === userNamesArray[i]) {
+            console.log(socket.nickname);
+            let index = userNamesArray.indexOf(userNamesArray[i]);
+            console.log(index);
+            userNamesArray.splice(index);   
+        } 
+      }
+      console.log('After Userlist: '+ userNamesArray);
+      io.emit('updateduserlist', userNamesArray);
     })
     
 
-    //Disconnect
+    //Disconnect message
     socket.on('disconnect', function(){
-        io.emit('disconnect');
-        console.log('user disconnected');
+        io.emit('disconnect', socket.nickname);
+        console.log(socket.nickname +' disconnected');
     });
 
-    //Prints chat message to the console
+    //Message function
     socket.on('chat message', function(data){
         console.log(`${socket.nickname}: ` + data);
         io.emit('chat message', {msg: data, nick: socket.nickname});
@@ -57,16 +79,13 @@ http.listen(PORT, function(){
 });
 
 /*
+- Sign in instantly using a nickname
 - Broadcast a message to connected users when someone connects or disconnects.
 - Add support for nicknames.
-- Don’t send the same message to the user that sent it himself. Instead, append the message directly as soon as he presses enter.
-- Add “{user} is typing” functionality.
-- Show who’s online.
-- Add private messaging.
+- Add users to a user list.
 
+- Remove user when they press the logout button.
+- Add private messaging.
 - Add channels
 - Add private channels
-- Create an account or sign in instantly using a nickname
-Test
-
 */
