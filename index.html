@@ -21,6 +21,9 @@
     <!--JQuery-->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script> 
 
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
     <title>Iron Chat</title>
     </head>
 
@@ -46,12 +49,57 @@
                 <!-- Side Menu -->
                 <div class="card-panel hoverable">Chat Name</div>
 
-                <ul class="collection">
-                    <li class="collection-item grey lighten-5">general</li>
-                    <li class="collection-item grey lighten-5">software</li>
-                    <li class="collection-item grey lighten-5">html</li>
-                    <li class="collection-item grey lighten-5">js</li>
+                <ul class="collapsible expandable">
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">filter_drama</i>Home</div>
+                        <div class="collapsible-body">
+
+                            <ul class="collection">
+                                <li class="collection-item">Main</li>
+                            </ul>
+                    
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">place</i>Users</div>
+                        <div class="collapsible-body">
+                            <!--List User-->
+                            <div>
+                                <button id="show-list" type="button" class="btn waves-effect waves-light">Show Users<i class="material-icons right">send</i></button>
+                                <div id="user-list">
+                                    
+                                </div>
+                            </div>
+                            
+                            <!--Log Out Btn-->
+                            <div>
+                                <button id="remove-user" type="button" class="btn waves-effect waves-light">Remove Me<i class="material-icons right">send</i></button>
+                                <div id="remove-user-list">
+            
+                                </div>
+                            </div>
+
+                        </div>
+                    </li>
+                        
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">whatshot</i>Direct Message</div>
+                        <div class="collapsible-body">
+                            <p>Write down their username: </p>
+                            
+                            <form id="dm-form" autocomplete="off">
+                                <input id="dm-username" type="text">
+                                <input type="submit">
+                            </form>
+                        </div>
+                        
+                        <ul class="collection" id="dm-list">
+                            
+                        </ul>
+                    </li>
                 </ul>
+
             </div>
             
             <!--Right Side-->
@@ -83,24 +131,6 @@
         </div>
     </div>
 
-    <!--List User-->
-    <div>
-        <button id="show-list" type="button" class="btn waves-effect waves-light">Show Users<i class="material-icons right">send</i></button>
-        <div id="user-list">
-            
-        </div>
-    </div>
-
-    <div>
-        <button id="remove-user" type="button" class="btn waves-effect waves-light">Remove Me<i class="material-icons right">send</i></button>
-        <div id="remove-user-list">
-
-        </div>
-    </div>
-
-    
-        
-
     <!--Socket.io Jquery Scripts-->
     <script>
         $(function () {
@@ -112,7 +142,7 @@
             //This event is then caught by the server.
             //.submit method is equavelent to .on('submit')
 
-            //Username set function:
+            //Set Username function:
             $('#set-nick').submit(function(e){
                 e.preventDefault(); //Prevents page reloading
                 console.log('Username Submitted');
@@ -131,27 +161,31 @@
                 console.log(name + ' connected')
             })
 
-            //Userlist Function:
-            /*
-            socket.on('username', function(data){
-                $('#show-list').on('click', function(){
-                    console.log('Showing Userlist');
-                    $('#user-list').html('');
-                    $('#user-list').append(`${data}`);
-                })
+            //Direct Messages
+            $('#dm-form').submit(function(e){
+                e.preventDefault();
+                console.log('private channel requesting');
+                
+                socket.emit('new pm', $('#dm-username').val());
             })
-            */
+
+            socket.on('return pm', function(data){
+                //console.log(data.nick);
+                //console.log(data.userArray)
+
+                
+            
+            })
+
+            
+            
 
             //get userlist
-            $('#show-list').on('click', function(e){
-                e.preventDefault();
-                console.log('Get Userlist');
-                socket.emit('userlist');
-            })
 
+            //Always active
             socket.on('updateduserlist', function(data) {
-                console.log('Updated Userlist');
-                console.log(data)
+                //console.log('Updated Userlist');
+                //console.log(data)
                 $('#user-list').html('');
                 $('#user-list').append(`${data}`);
             })
@@ -194,11 +228,21 @@
             }) 
 
         });
+
+        
     </script>
 
+    <script>
+        //Materalise JS
+        //M.AutoInit();
+
+        var elem = document.querySelector('.collapsible.expandable');
+        var instance = M.Collapsible.init(elem, {
+            accordion: false
+        });
+    </script>
     
 
-    <!-- Compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    
     </body>
 </html>

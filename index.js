@@ -12,7 +12,7 @@ let nickname;
 
 //Initalize and create a route
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
+  	res.sendFile(__dirname + '/index.html');
 });
 
 //Load static files: CSS
@@ -29,35 +29,44 @@ io.on('connect', function(socket){
 
     //Add username to userarray function:
     socket.on('username', function(userName){
-      console.log('New User: ' + userName);
-      socket.nickname = userName;
-      
-      userNamesArray.push(userName);
-      console.log(userNamesArray);
-      
+		console.log('New User: ' + userName);
+		socket.nickname = userName;
+		
+		userNamesArray.push(userName);
+		console.log(userNamesArray);
+		
+		io.emit('updateduserlist', userNamesArray);
     })
-
+    
     //Send Userlist 
-    socket.on('userlist', function(data) {
-      console.log('Emitting: '+userNamesArray);
-      io.emit('updateduserlist', userNamesArray);
-    })
 
     //Removes User from the userlist and returns a new list
-    let updatedUserList=[];
+    
     socket.on('remove user', function(data){
-      console.log('Before Userlist: '+userNamesArray);
-      for (let i = 0; i < userNamesArray.length; i++) {
-        if (socket.nickname === userNamesArray[i]) {
-            console.log(socket.nickname);
-            let index = userNamesArray.indexOf(userNamesArray[i]);
-            console.log(index);
-            userNamesArray.splice(index);   
-        } 
-      }
-      console.log('After Userlist: '+ userNamesArray);
-      io.emit('updateduserlist', userNamesArray);
-    })
+		console.log('Before Userlist: '+userNamesArray);
+		for (let i = 0; i < userNamesArray.length; i++) {
+			if (socket.nickname === userNamesArray[i]) {
+				//console.log(socket.nickname);
+				let index = userNamesArray.indexOf(userNamesArray[i]);
+				//console.log(index);
+				userNamesArray.splice(index);   
+			} 
+		}
+		console.log('After Userlist: '+ userNamesArray);
+		io.emit('updateduserlist', userNamesArray);
+	})
+	
+	//Send usernick.name 
+	socket.on('new pm', function(data){
+		for (let i = 0; i < userNamesArray.length; i++) {
+			if (data === userArray[i]) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		io.emit('return pm', );
+	})
     
 
     //Disconnect message
@@ -75,7 +84,7 @@ io.on('connect', function(socket){
 });
 
 http.listen(PORT, function(){
-  console.log(`Server Started on PORT: ${PORT}`);
+  	console.log(`Server Started on PORT: ${PORT}`);
 });
 
 /*
@@ -83,9 +92,7 @@ http.listen(PORT, function(){
 - Broadcast a message to connected users when someone connects or disconnects.
 - Add support for nicknames.
 - Add users to a user list.
-
 - Remove user when they press the logout button.
-- Add private messaging.
-- Add channels
-- Add private channels
+
+- Add DMs
 */
