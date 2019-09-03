@@ -166,7 +166,15 @@
                 e.preventDefault();
                 console.log('private channel requesting');
                 
-                socket.emit('new pm', $('#dm-username').val());
+                socket.emit('new pm', $('#dm-username').val(), function(data){
+                    if(data) {
+                        console.log(data);
+                        console.log('Username Valid')
+                    } else {
+                        console.log('invalid username')
+                    }
+                });
+                $('#dm-username').val('');
             })
 
             socket.on('return pm', function(data){

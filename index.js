@@ -57,15 +57,20 @@ io.on('connect', function(socket){
 	})
 	
 	//Send usernick.name 
-	socket.on('new pm', function(data){
+	socket.on('new pm', function(data, callback){
 		for (let i = 0; i < userNamesArray.length; i++) {
-			if (data === userArray[i]) {
-				return true;
+			if (data === userNamesArray[i]) {
+				console.log(data);
+				console.log(userNamesArray);
+				console.log('valid username')
+				callback(true);
+				break
+				//io.emit('return pm', data);
 			} else {
-				return false;
+				callback(false);
 			}
 		}
-		io.emit('return pm', );
+		
 	})
     
 
