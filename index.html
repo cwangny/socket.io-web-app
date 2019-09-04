@@ -24,49 +24,53 @@
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
-    <title>Iron Chat</title>
+    <title>Socket App</title>
     </head>
 
     <body>
 
-    <!--Set Username Page -->
-    <div id="set-username-wrap">
-        <p>Write your username: </p>
+    <!--Set Username Wrap-->
+    <div class="container center-align" id="set-username-wrap">
+        <h2 class="text-brown darken-4">Write your username: </h2>
         <p id="nick-err-msg"></p>
         <form id="set-nick" autocomplete="off">
             <input id="username" type="text">
-            <input type="submit">
-
+            <button class="btn waves-effect waves-light" type="submit" >SUBMIT<i class="material-icons right">send</i></button>
         </form>
     </div>
 
 
-    <!--Main Content-->
+    <!--Main Content Wrap-->
     <div id="main-content-wrap">
         <div class="row">
             <!--Left Side-->
             <div class="col s2" id="side-menu">
-                <!-- Side Menu -->
-                <div class="card-panel hoverable">Chat Name</div>
+                <!--Side Menu-->
+                
+                <!--Logo-->
+                <div class="card-panel hoverable">
+                    <img src="static/images/logo.png">
+                </div>
 
-                <ul class="collapsible expandable">
+                <!--Settings Tab-->
+                <ul class="collapsible expandable teal lighten-4">
                     <li>
-                        <div class="collapsible-header"><i class="material-icons">filter_drama</i>Home</div>
+                        <div class="collapsible-header"><i class="material-icons" >group</i>User Settings</div>
+                        <!--Username-->
                         <div class="collapsible-body">
-
-                            <ul class="collection">
-                                <li class="collection-item">Main</li>
+                            <h5>Logged In As:</h5>
+                            <ul id="login-name" class="collection">
+                                
                             </ul>
-                    
                         </div>
                     </li>
 
                     <li>
-                        <div class="collapsible-header"><i class="material-icons">place</i>Users</div>
+                        <div class="collapsible-header"><i class="material-icons">chat</i>Chat Settings</div>
                         <div class="collapsible-body">
-                            <!--List User-->
+                            <!--List Users-->
                             <div>
-                                <button id="show-list" type="button" class="btn waves-effect waves-light">Show Users<i class="material-icons right">send</i></button>
+                                <h5>Chat Participants:</h5>
                                 <div id="user-list">
                                     
                                 </div>
@@ -74,43 +78,37 @@
                             
                             <!--Log Out Btn-->
                             <div>
-                                <button id="remove-user" type="button" class="btn waves-effect waves-light">Remove Me<i class="material-icons right">send</i></button>
+                                <button id="remove-user" type="button" class="btn waves-effect waves-light">Log Out<i class="material-icons right">clear</i></button>
                                 <div id="remove-user-list">
             
                                 </div>
                             </div>
-
                         </div>
-                    </li>
-                        
-                    <li>
-                        <div class="collapsible-header"><i class="material-icons">whatshot</i>Direct Message</div>
-                        <div class="collapsible-body">
-                            <p>Write down their username: </p>
-                            
-                            <form id="dm-form" autocomplete="off">
-                                <input id="dm-username" type="text">
-                                <input type="submit">
-                            </form>
-                        </div>
-                        
-                        <ul class="collection" id="dm-list">
-                            
-                        </ul>
                     </li>
                 </ul>
-
             </div>
             
             <!--Right Side-->
             <div class="col s10" id="page-content">
+                <!--Account Float Btn-->
                 <section>
-                    <div id="card" class="card-panel teal">
-                        <span class="white-text">MESSAGES</span>
+                        <div class="fixed-action-btn">
+                            <a class="btn-floating btn-large teal">
+                                <i class="large material-icons">account_circle</i>
+                            </a>
+                        </div>
+                </section>
+
+                <!--Main Message/Chat Box-->
+                <section>
+                    <div id="card">
                         <ul id="messages"></ul>
                     </div>
                 </section>
-                        
+
+                <div class="divider"></div>
+
+                <!--User Input-->
                 <section>
                     <div id="message-box" class="row">
                         <form id="msg-form" autocomplete="off">
@@ -119,7 +117,7 @@
                             </div>
                             
                             <div class="col s2">
-                                <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+                                <button class="btn waves-effect waves-light" type="submit" name="action">Send
                                     <i class="material-icons right">send</i>
                                 </button>
                             </div>
@@ -158,35 +156,14 @@
 
                 $('#remove-user').show();
 
+                $('#login-name').append(`
+                <div class="card-panel hoverable teal lighten-2 white-text">
+                    <i class="material-icons left">assignment_ind</i>
+                    ${name}</div>
+                `);
+                
                 console.log(name + ' connected')
             })
-
-            //Direct Messages
-            $('#dm-form').submit(function(e){
-                e.preventDefault();
-                console.log('private channel requesting');
-                
-                socket.emit('new pm', $('#dm-username').val(), function(data){
-                    if(data) {
-                        console.log(data);
-                        console.log('Username Valid')
-                    } else {
-                        console.log('invalid username')
-                    }
-                });
-                $('#dm-username').val('');
-            })
-
-            socket.on('return pm', function(data){
-                //console.log(data.nick);
-                //console.log(data.userArray)
-
-                
-            
-            })
-
-            
-            
 
             //get userlist
 
@@ -194,6 +171,7 @@
             socket.on('updateduserlist', function(data) {
                 //console.log('Updated Userlist');
                 //console.log(data)
+
                 $('#user-list').html('');
                 $('#user-list').append(`${data}`);
             })
@@ -204,6 +182,11 @@
                 e.preventDefault();
                 socket.emit('remove user')
                 console.log('Remove This User')
+
+                $('#set-username-wrap').show();
+                $('#main-content-wrap').hide();
+
+                $('#login-name').html('');
             })
 
         
@@ -225,14 +208,14 @@
             //When new user joins 'a user connected' msg is displayed on the browser console 
             socket.on('connect', function(){
                 console.log('a user connected');
-                $('#messages').append(`<li>A User Connected</li>`);
+                //$('#messages').append(`<li>A User Connected</li>`);
             })
 
             //When user disconnects 'a user disconnected' msg is shown on the browser  console
             
             socket.on('disconnect', function(){
                 console.log('a user disconnected');
-                $('#messages').append('<li>A User Disconnected</li>');
+                //$('#messages').append('<li>A User Disconnected</li>');
             }) 
 
         });
@@ -248,9 +231,16 @@
         var instance = M.Collapsible.init(elem, {
             accordion: false
         });
-    </script>
-    
 
-    
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.fixed-action-btn');
+            var instances = M.FloatingActionButton.init(elems, {
+            direction: 'left',
+            hoverEnabled: false
+            });
+        });
+       
+    </script>
+
     </body>
 </html>

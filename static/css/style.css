@@ -1,16 +1,11 @@
-* {
-
-}
-
 #main-content-wrap {
     display: none;
+    height: 100vh;
+    overflow: hidden;
 }
 
 #side-menu {
-    /*padding-left: 0!important;
-    padding-right: 0!important; 
-    */
-    height: 1080px;
+    height: 100vh;
     background-color: #fafafa;
 }
 
@@ -20,20 +15,18 @@
 
 #remove-user {
     display: none;
+    height: 40px;
 }
 
 #show-list {
     display: none;
 }
 
-
-
 #page-content {
     border-left-style: solid;
     border-left-width: 1px;
     border-left-color: #e0e0e0;
-    height: 1080px; 
-    
+    height: 100vh;  
 }
 
 .collection {
@@ -41,11 +34,22 @@
     border-right: none;
 }
 #message-box {
-    
+    position: fixed;
+    bottom: 0;
+    width: 90%;
 }
 
 #card {
-    height: 500px;
+    height: 90vh;
     overflow: scroll; 
-    
+    font-size: 20px;
 }
+
+.fixed-action-btn {
+    top: 10px;
+}
+
+#set-username-wrap {
+    margin-top: 35vh;
+}
+

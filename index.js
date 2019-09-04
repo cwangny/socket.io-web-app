@@ -31,7 +31,7 @@ io.on('connect', function(socket){
     socket.on('username', function(userName){
 		console.log('New User: ' + userName);
 		socket.nickname = userName;
-		
+
 		userNamesArray.push(userName);
 		console.log(userNamesArray);
 		
@@ -41,7 +41,7 @@ io.on('connect', function(socket){
     //Send Userlist 
 
     //Removes User from the userlist and returns a new list
-    
+    //Log out functionality
     socket.on('remove user', function(data){
 		console.log('Before Userlist: '+userNamesArray);
 		for (let i = 0; i < userNamesArray.length; i++) {
@@ -56,7 +56,7 @@ io.on('connect', function(socket){
 		io.emit('updateduserlist', userNamesArray);
 	})
 	
-	//Send usernick.name 
+	//Private Message 
 	socket.on('new pm', function(data, callback){
 		for (let i = 0; i < userNamesArray.length; i++) {
 			if (data === userNamesArray[i]) {
@@ -64,11 +64,11 @@ io.on('connect', function(socket){
 				console.log(userNamesArray);
 				console.log('valid username')
 				callback(true);
+				
+				//userNamesArray[data].emit('private message', {msg: data, nick: socket.nickname})
 				break
 				//io.emit('return pm', data);
-			} else {
-				callback(false);
-			}
+			} 
 		}
 		
 	})
@@ -99,5 +99,5 @@ http.listen(PORT, function(){
 - Add users to a user list.
 - Remove user when they press the logout button.
 
-- Add DMs
+- Implement database using MongoDB or SQL
 */
