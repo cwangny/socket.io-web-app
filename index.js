@@ -3,7 +3,7 @@
 let express = require('express');
 let app = express();
 let http = require('http').createServer(app);
-let PORT = 3000;
+let PORT = process.env.PORT || 3000;
 let io = require('socket.io')(http);
 //Global Scope
 let userNamesArray = [];
