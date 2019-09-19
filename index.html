@@ -31,7 +31,7 @@
 
     <!--Set Username Wrap-->
     <div class="container center-align" id="set-username-wrap">
-        <h2 class="text-brown darken-4">Write your username: </h2>
+        <h2 class="text-brown darken-4">Set your username: </h2>
         <p id="nick-err-msg"></p>
         <form id="set-nick" autocomplete="off">
             <input id="username" type="text">
@@ -129,7 +129,7 @@
         </div>
     </div>
 
-    <!--Socket.io Jquery Scripts-->
+    <!--Socket.io Scripts-->
     <script>
         $(function () {
             let socket = io();
@@ -140,11 +140,11 @@
             //This event is then caught by the server.
             //.submit method is equavelent to .on('submit')
 
-            //Set Username function:
+            //Allows the users to set their username. Emits the username event and the username value to the server.
             $('#set-nick').submit(function(e){
                 e.preventDefault(); //Prevents page reloading
                 console.log('Username Submitted');
-                //Emit the username event and send the value
+                
                 name = $('#username').val();
                 socket.emit('username', $('#username').val())
 
@@ -165,9 +165,7 @@
                 console.log(name + ' connected')
             })
 
-            //get userlist
-
-            //Always active
+            //Gets updated array.
             socket.on('updateduserlist', function(data) {
                 //console.log('Updated Userlist');
                 //console.log(data)
@@ -176,8 +174,7 @@
                 $('#user-list').append(`${data}`);
             })
 
-            //Remove user form usernamearray.
-            //onclick emit 'removeuser' event
+            //Log out btn that removes user from the array.
             $('#remove-user').on('click', function(e){
                 e.preventDefault();
                 socket.emit('remove user');
@@ -189,7 +186,7 @@
                 $('#login-name').html('');
             })
 
-            //Sends the message to the server.
+            //Sends the message data to the server.
             $('#msg-form').submit(function(e){
                 e.preventDefault(); // prevents page reloading
                 socket.emit('chat message', $('#m').val());
@@ -197,20 +194,19 @@
                 return false;
             });
 
-            //Appends the message to the chat box. 
+            //Gets message data from the server and appends the message to the chat box. 
             socket.on('chat message', function(data){
                 $('#messages').append(data.nick +': '+ data.msg + '<br>');
             });
 
-            //When new user joins 'a user connected' msg is displayed on the browser console 
+            //logs when a new user connects.
             socket.on('connect', function(){
                 console.log('a user connected');
                 //$('#messages').append(`<li>A User Connected</li>`);
             })
 
-            //When user disconnects 'a user disconnected' msg is shown on the browser  console
+            //logs when a user disconnects.
             socket.on('disconnect', function(){
-                socket.emit('remove user');
                 console.log('a user disconnected');
                 //$('#messages').append('<li>A User Disconnected</li>');
             })
@@ -218,8 +214,7 @@
     </script>
 
     <script>
-        //Materalise JS
-        //M.AutoInit();
+        //For Materalise JS.
 
         var elem = document.querySelector('.collapsible.expandable');
         var instance = M.Collapsible.init(elem, {
