@@ -55,29 +55,22 @@ io.on('connect', function(socket){
 		console.log('After Userlist: '+ userNamesArray);
 		io.emit('updateduserlist', userNamesArray);
 	})
-	
-	//Private Message 
-	socket.on('new pm', function(data, callback){
-		for (let i = 0; i < userNamesArray.length; i++) {
-			if (data === userNamesArray[i]) {
-				console.log(data);
-				console.log(userNamesArray);
-				console.log('valid username')
-				callback(true);
-				
-				//userNamesArray[data].emit('private message', {msg: data, nick: socket.nickname})
-				break
-				//io.emit('return pm', data);
-			} 
-		}
-		
-	})
     
-
     //Disconnect message
     socket.on('disconnect', function(){
-        io.emit('disconnect', socket.nickname);
-        console.log(socket.nickname +' disconnected');
+        //io.emit('disconnect', socket.nickname);
+		console.log(socket.nickname +' disconnected');
+		console.log('Before Userlist: '+userNamesArray);
+		for (let i = 0; i < userNamesArray.length; i++) {
+			if (socket.nickname === userNamesArray[i]) {
+				//console.log(socket.nickname);
+				let index = userNamesArray.indexOf(userNamesArray[i]);
+				//console.log(index);
+				userNamesArray.splice(index);   
+			} 
+		}
+		console.log('After Userlist: '+ userNamesArray);
+		io.emit('updateduserlist', userNamesArray);
     });
 
     //Message function

@@ -180,8 +180,8 @@
             //onclick emit 'removeuser' event
             $('#remove-user').on('click', function(e){
                 e.preventDefault();
-                socket.emit('remove user')
-                console.log('Remove This User')
+                socket.emit('remove user');
+                console.log('Remove This User');
 
                 $('#set-username-wrap').show();
                 $('#main-content-wrap').hide();
@@ -189,7 +189,6 @@
                 $('#login-name').html('');
             })
 
-        
             //Sends the message to the server.
             $('#msg-form').submit(function(e){
                 e.preventDefault(); // prevents page reloading
@@ -203,8 +202,6 @@
                 $('#messages').append(data.nick +': '+ data.msg + '<br>');
             });
 
-            
-
             //When new user joins 'a user connected' msg is displayed on the browser console 
             socket.on('connect', function(){
                 console.log('a user connected');
@@ -212,15 +209,12 @@
             })
 
             //When user disconnects 'a user disconnected' msg is shown on the browser  console
-            
             socket.on('disconnect', function(){
+                socket.emit('remove user');
                 console.log('a user disconnected');
                 //$('#messages').append('<li>A User Disconnected</li>');
-            }) 
-
+            })
         });
-
-        
     </script>
 
     <script>
