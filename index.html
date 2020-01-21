@@ -1,4 +1,4 @@
-<!--Client Side-->
+<!--Frontend.-->
 
 <!doctype html>
 <html lang="en">
@@ -28,10 +28,9 @@
     </head>
 
     <body>
-
     <!--Set Username Wrap-->
     <div class="container center-align" id="set-username-wrap">
-        <h2 class="text-brown darken-4">Set your username: </h2>
+        <h2 class="text-brown darken-4">Pick a Username: </h2>
         <p id="nick-err-msg"></p>
         <form id="set-nick" autocomplete="off">
             <input id="username" type="text">
@@ -47,10 +46,11 @@
             <div class="col s2" id="side-menu">
                 <!--Side Menu-->
                 
-                <!--Logo-->
+                <!--Logo
                 <div class="card-panel hoverable">
                     <img src="static/images/logo.png">
                 </div>
+                -->
 
                 <!--Settings Tab-->
                 <ul class="collapsible expandable teal lighten-4">
@@ -90,7 +90,7 @@
             
             <!--Right Side-->
             <div class="col s10" id="page-content">
-                <!--Account Float Btn-->
+                <!--Account Float Btn
                 <section>
                         <div class="fixed-action-btn">
                             <a class="btn-floating btn-large teal">
@@ -98,6 +98,7 @@
                             </a>
                         </div>
                 </section>
+                -->
 
                 <!--Main Message/Chat Box-->
                 <section>
@@ -134,16 +135,15 @@
         $(function () {
             let socket = io();
 
-            //Setting username Function:
-            //jquery selects set-nick form and whenever the submit event is triggered, this function is exectued.
-            //This function emits a custom event called username, at the same time it also sends in the value that is stored in the input field with id #username. 
-            //This event is then caught by the server.
-            //.submit method is equavelent to .on('submit')
+            // Setting username Function:
+            // jquery selects set-nick form and whenever the submit event is triggered, this function is exectued.
+            // This function emits a custom event called username, at the same time it also sends in the value that is stored in the input field with id #username. 
+            // This event is then caught by the server.
+            // .submit method is equavelent to .on('submit')
 
-            //Allows the users to set their username. Emits the username event and the username value to the server.
+            // Allows the users to set their username. Emits the username event and the username value to the server.
             $('#set-nick').submit(function(e){
-                e.preventDefault(); //Prevents page reloading
-                console.log('Username Submitted');
+                e.preventDefault(); // Prevents page reloading.
                 
                 name = $('#username').val();
                 socket.emit('username', $('#username').val())
@@ -165,20 +165,16 @@
                 console.log(name + ' connected')
             })
 
-            //Gets updated array.
+            // Gets updated array.
             socket.on('updateduserlist', function(data) {
-                //console.log('Updated Userlist');
-                //console.log(data)
-
                 $('#user-list').html('');
                 $('#user-list').append(`${data}`);
             })
 
-            //Log out btn that removes user from the array.
+            // Log out btn that removes user from the array.
             $('#remove-user').on('click', function(e){
                 e.preventDefault();
                 socket.emit('remove user');
-                console.log('Remove This User');
 
                 $('#set-username-wrap').show();
                 $('#main-content-wrap').hide();
@@ -186,35 +182,43 @@
                 $('#login-name').html('');
             })
 
-            //Sends the message data to the server.
+            // Sends the message data to the server.
             $('#msg-form').submit(function(e){
-                e.preventDefault(); // prevents page reloading
+                e.preventDefault(); 
                 socket.emit('chat message', $('#m').val());
                 $('#m').val('');
                 return false;
             });
 
-            //Gets message data from the server and appends the message to the chat box. 
+            // Gets message data from the server and appends the message to the chat box. 
             socket.on('chat message', function(data){
-                $('#messages').append(data.nick +': '+ data.msg + '<br>');
+                displayMessage(data);
             });
 
-            //logs when a new user connects.
-            socket.on('connect', function(){
-                console.log('a user connected');
-                //$('#messages').append(`<li>A User Connected</li>`);
+            socket.on('load old msgs', (docs)=>{
+                for(let i = 0; i < docs.length; i++) {
+                    displayMessage(docs[i]);
+                }
             })
 
-            //logs when a user disconnects.
+            function displayMessage(data) {
+                $('#messages').append(data.nick +': '+ data.msg + '<br>');
+            }
+
+            // logs when a new user connects.
+            socket.on('connect', function(){
+                console.log('a user connected');
+            })
+
+            // logs when a user disconnects.
             socket.on('disconnect', function(){
                 console.log('a user disconnected');
-                //$('#messages').append('<li>A User Disconnected</li>');
             })
         });
     </script>
 
     <script>
-        //For Materalise JS.
+        // For Materalise JS.
 
         var elem = document.querySelector('.collapsible.expandable');
         var instance = M.Collapsible.init(elem, {
